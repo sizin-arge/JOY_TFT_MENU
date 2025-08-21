@@ -53,3 +53,28 @@ dkms.conf
 
 # debug information files
 *.dwo
+# ---- Build outputs (CubeIDE / GCC) ----
+**/Debug/
+**/Release/
+**/build/
+**/cmake-build-*/
+**/*.o
+**/*.obj
+**/*.d
+**/*.map
+**/*.elf
+**/*.hex
+**/*.bin
+**/*.lss
+**/*.list
+
+# ---- IDE / kullanıcı ayarları ----
+.settings/
+.vscode/
+.idea/
+*.launch
+*.log
+
+# ---- OS artıkları ----
+.DS_Store
+Thumbs.db
