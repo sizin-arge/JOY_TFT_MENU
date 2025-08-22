@@ -1,70 +1,72 @@
-JOY_TFT_MENU
+# JOY_TFT_MENU
 
-STM32F3 + ST7789 (ST7789V) — 5-line TFT menu. CubeMX → HAL/SPI, modular driver + fonts + menu.
+STM32F3 + ST7789 ile **5 satırlı menü** örneği. CubeMX → HAL/SPI, modüler sürücü + font + menü yapısı.  
+A 5-line menu on ST7789 TFT using STM32F3. Modular driver, fonts and menu built on CubeMX + HAL/SPI.
 
-TL;DR (EN)
+---
 
-Open JOY_TFT_MENU.ioc in STM32CubeMX → Generate Code
+## Genel Bakış / Overview
+- **TR:** Proje; SPI ile ST7789 TFT sürücüsünü başlatır, 3 farklı fontla 5 satırlı bir menü çizer. Kod modülerdir: `tft_driver`, `fonts`, `menu`.
+- **EN:** Initializes ST7789 over SPI and renders a 5-line menu with 3 fonts. Code is modular: `tft_driver`, `fonts`, `menu`.
 
-Open project in STM32CubeIDE → Build & Flash
+## Donanım / Hardware
+- MCU: **STM32F3** (örnek: STM32F373RCT6)  
+- TFT: **ST7789**, 240×320, 16-bit **RGB565**  
+- Bus: **SPI1**
 
-You should see the 5-line menu on ST7789 TFT.
+## Pinout
+| Signal | MCU Pin | User Label | Description |
+|-------:|:-------:|:-----------|:------------|
+| SCK    | PA5     | —          | SPI clock |
+| MISO   | PA6     | —          | (Not used by most ST7789 panels) |
+| MOSI   | PA7     | —          | Data to TFT |
+| **RST**| PB0     | `TFT_RST`  | Panel reset |
+| **DC** | PB1     | `TFT_DC`   | Data/Command select |
+| **CS** | PB2     | `TFT_CS`   | Chip select |
 
-Kısa Özet (TR)
+> Saat kaynağı: **HSE kristal**, sistem frekansı: **72 MHz** (CubeMX Clock Configuration).
 
-STM32CubeMX ile JOY_TFT_MENU.ioc dosyasını aç → Generate Code
-
-STM32CubeIDE’de projeyi aç → Derle & Yükle
-
-ST7789 TFT’de 5 satırlı menü görüntülenir.
-
-Hardware / Donanım
-
-MCU: STM32F3 (ör. STM32F373)
-
-TFT: ST7789, 240×320, 16-bit RGB565
-
-SPI: SPI1
-
-Pinout
-İşlev	MCU Pin	Açıklama
-SCK	PA5	SPI clock
-MOSI	PA7	Master → TFT veri
-MISO	PA6	(opsiyonel, çoğu ST7789’da kullanılmaz)
-TFT_CS	PB2	Chip Select
-TFT_DC	PB1	Data/Command
-TFT_RST	PB0	Donanımsal Reset
-
-Not: Pin etiketleri Core/Inc/config_pins.h içinde. Kart değişince buradan güncelleyin.
-
-Folder Structure / Klasör Yapısı
+## Klasör Yapısı / Folder Structure
 Core/
-  Inc/   -> main.h, config_pins.h, tft_driver.h, fonts.h, menu.h
-  Src/   -> main.c, tft_driver.c, fonts.c, menu.c
-JOY_TFT_MENU.ioc  -> CubeMX proje ayarları (pin/clock/SPI)
+├─ Inc/
+│ ├─ config_pins.h
+│ ├─ fonts.h
+│ ├─ main.h
+│ ├─ menu.h
+│ └─ tft_driver.h
+└─ Src/
+├─ fonts.c
+├─ main.c
+├─ menu.c
+└─ tft_driver.c
+JOY_TFT_MENU.ioc # CubeMX konfigürasyonu (KESİNLİKLE repoda kalmalı)
 
-Build Steps / Derleme Adımları
+markdown
+Kopyala
+Düzenle
 
-CubeMX: JOY_TFT_MENU.ioc → Generate Code (Drivers/ayarlar oluşur)
+## Derleme / Build
+- **Araçlar / Tools:** STM32CubeIDE + STM32CubeMX  
+- **Adımlar / Steps:**
+  1. Repoyu klonlayın: `git clone https://github.com/<kullanici>/JOY_TFT_MENU.git`
+  2. `JOY_TFT_MENU.ioc` dosyasını CubeMX ile açıp **Generate Code** (isteğe bağlı).
+  3. STM32CubeIDE ile projeyi açın, **Build** ve **Run/Debug**.
 
-CubeIDE: Projeyi aç → Build (hammer) → Run/Debug (play)
+## Kullanım / Usage
+- `main.c` içinde:
+  - `TFT_Init(&hspi1);`
+  - `Menu_Draw();` — 5 satırlı menüyü çizer (orta satır vurgulu).
+- Döndürülebilir: `TFT_SetRotation(0..3)`
+- Tam ekran renk: `TFT_FillScreen(TFT_COLOR_*)`
 
-TFT’de menüyü görün.
+## Notlar / Notes
+- Renk formatı: **RGB565**
+- Fontlar: 7×10, 11×18, 16×26 (örnek)
+- Performans için SPI prescaler ~ **/8 ≈ 9 MHz** (72 MHz PCLK)
 
-Notes
+## Lisans / License
+**MIT** — detaylar için `LICENSE` dosyasına bakınız.
 
-Renkler: RGB565.
+## Video
+TR/EN anlatım: ((http://www.youtube.com/@sizinarge))
 
-Yazı tipleri: 7×10, 11×18, 16×26 (bkz. fonts.[ch]).
-
-Menü çizimi: Menu_Draw() (bkz. menu.c).
-
-Ekran döndürme: TFT_SetRotation().
-
-License
-
-MIT — ayrıntı için LICENSE.
-
-Video
-
-YouTube: (http://www.youtube.com/@sizinarge)
