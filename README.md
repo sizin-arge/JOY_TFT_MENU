@@ -39,7 +39,7 @@ Core/
 ├─ main.c
 ├─ menu.c
 └─ tft_driver.c
-JOY_TFT_MENU.ioc # CubeMX konfigürasyonu (KESİNLİKLE repoda kalmalı)
+JOY_TFT_MENU.ioc # CubeMX konfigürasyonu
 
 markdown
 Kopyala
