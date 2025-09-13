@@ -137,6 +137,9 @@ int main(void)
 
   MX_GPIO_Init();
   MX_SPI1_Init();
+
+
+ 
   /* USER CODE BEGIN 2 */
 
   // Bu bölüme, çevrebirimler başlatıldıktan sonra, ana döngüye (while(1)) girmeden önce çalışacak kodları ekleyin.
@@ -146,15 +149,94 @@ int main(void)
 
  TFT_Init(&hspi1);
 
- TFT_SetRotation(0);
- TFT_FillScreen(TFT_COLOR_BLACK);
-     TFT_SetRotation(1);
-      TFT_FillScreen(TFT_COLOR_BLACK);
+ TFT_FillScreen(TFT_COLOR_BLACK);  // Zemini temizle
+  HAL_Delay(500);
 
-Menu_Draw();
+  /***************************** kare renk test *****************************************/
+
+  typedef struct { uint16_t x, y, s; uint16_t color; } Box;
+  const Box boxes[] = {
+      {  8,  10,  28, TFT_COLOR_RED      },  // küçük kırmızı kare
+      { 50,  18,  40, TFT_COLOR_GREEN    },  // orta yeşil kare
+      {100,  30,  56, TFT_COLOR_BLUE     },  // daha büyük mavi kare
+      {170,  50,  34, TFT_COLOR_YELLOW   },  // sarı kare
+      {220,  70,  44, TFT_COLOR_CYAN     },  // camgöbeği kare
+      { 30, 120,  60, TFT_COLOR_MAGENTA  },  // eflatun kare
+      {110, 120,  80, TFT_COLOR_ORANGE   }   // turuncu kare (en büyük)
+  };
+
+  for (uint32_t i = 0; i < (sizeof(boxes)/sizeof(boxes[0])); i++) {
+      uint16_t W = TFT_GetWidth();
+      uint16_t H = TFT_GetHeight();
+      uint16_t x = boxes[i].x;
+      uint16_t y = boxes[i].y;
+      uint16_t s = boxes[i].s;
+
+      // Ekranı taşmasın diye güvenlik (taşarsa kırp)
+      if (x + s > W) s = (W > x) ? (W - x) : 0;
+      if (y + s > H) s = (H > y) ? (H - y) : 0;
+      if (s == 0) continue;
+
+      // Dolu kare
+      TFT_FillRect(x, y, s, s, boxes[i].color);
+
+      // 1px beyaz çerçeve (varsa çizgi fonksiyonlarını kullanıyoruz)
+      TFT_DrawHLine(x,       y,       s, TFT_COLOR_WHITE);
+      TFT_DrawHLine(x,       y+s-1,   s, TFT_COLOR_WHITE);
+      TFT_DrawVLine(x,       y,       s, TFT_COLOR_WHITE);
+      TFT_DrawVLine(x+s-1,   y,       s, TFT_COLOR_WHITE);
+
+      HAL_Delay(500);
+  }
+
+
+  HAL_Delay(2000);
+  TFT_SetRotation(0);
+  TFT_FillScreen(TFT_COLOR_BLACK);
+
+  /********************************************************************************/
+
+  /*************************** cizgi renk test ************************************/
+
+  uint16_t W = TFT_GetWidth(), H = TFT_GetHeight();
+  const uint16_t C[] = {
+    TFT_COLOR_RED, TFT_COLOR_GREEN, TFT_COLOR_BLUE, TFT_COLOR_YELLOW,
+    TFT_COLOR_CYAN, TFT_COLOR_MAGENTA, TFT_COLOR_ORANGE, TFT_COLOR_WHITE
+  };
+  const uint16_t CN = sizeof(C)/sizeof(C[0]);
+  uint16_t step = 20;
+  uint16_t thick = 3;
+
+  TFT_FillRect(0, 0, W, H, TFT_COLOR_BLACK);
+
+  /* YATAY */
+  for (uint16_t y = 0; y < H; y += step) {
+    TFT_FillRect(0, y, W, thick, C[(y/step)%CN]);
+    HAL_Delay(100);
+  }
+
+  /* DİKEY */
+  for (uint16_t x = 0; x < W; x += step) {
+    TFT_FillRect(x, 0, thick, H, C[(x/step)%CN]);
+    HAL_Delay(100);
+  }
+
+
+/*********************************************************************************************************/
+  HAL_Delay(2000);
+
+  TFT_SetRotation(0);
+  TFT_FillScreen(TFT_COLOR_BLACK);
+  TFT_SetRotation(1);
+
+
+ Menu_Draw();  /* menu */
 
 
   /* USER CODE END 2 */
+
+
+ 
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -349,3 +431,4 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
