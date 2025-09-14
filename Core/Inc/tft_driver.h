@@ -86,6 +86,11 @@ void TFT_DrawChar(uint16_t x, uint16_t y, char c, const FontDef* font,
 void TFT_WriteString(uint16_t x, uint16_t y, const char* str, const FontDef* font,
                      uint16_t color, uint16_t bgColor); // Bir metin dizisini çizer. // Draws a string of text.
 
+void TFT_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
+void TFT_FillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
+void TFT_DrawHLine(uint16_t x, uint16_t y, uint16_t w, uint16_t color);
+void TFT_DrawVLine(uint16_t x, uint16_t y, uint16_t h, uint16_t color);
+
 uint16_t TFT_GetWidth(void);     // Ekranın genişliğini döndürür. // Returns the width of the screen.
 uint16_t TFT_GetHeight(void);    // Ekranın yüksekliğini döndürür. // Returns the height of the screen.
 
