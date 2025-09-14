@@ -110,6 +110,60 @@ void TFT_SetAddressWindow(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
     TFT_WriteCommand(TFT_CMD_RAMWR); // Veriyi belleğe yazmaya başla (Memory Write)
 }
 
+/* --- Basit çizim yardımcıları ------------------------------------------- */
+
+void TFT_DrawPixel(uint16_t x, uint16_t y, uint16_t color)
+{
+    if (x >= _width || y >= _height) return;
+    TFT_SetAddressWindow(x, y, x, y);
+    uint8_t px[2] = { (uint8_t)(color >> 8), (uint8_t)(color & 0xFF) };
+    TFT_CS_Reset();
+    TFT_DC_Set();
+    HAL_SPI_Transmit(&hspi1, px, 2, HAL_MAX_DELAY);
+    TFT_CS_Set();
+}
+
+void TFT_FillRect(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color)
+{
+    /* Sınır denetimi + kırpma */
+    if (x >= _width || y >= _height) return;
+    if (x + w > _width)  w = _width  - x;
+    if (y + h > _height) h = _height - y;
+    if (w == 0 || h == 0) return;
+
+    TFT_SetAddressWindow(x, y, x + w - 1, y + h - 1);
+
+    uint32_t pixels = (uint32_t)w * (uint32_t)h;
+    uint8_t hi = (uint8_t)(color >> 8);
+    uint8_t lo = (uint8_t)(color & 0xFF);
+
+    TFT_CS_Reset();
+    TFT_DC_Set();
+    while (pixels--) {
+        HAL_SPI_Transmit(&hspi1, &hi, 1, HAL_MAX_DELAY);
+        HAL_SPI_Transmit(&hspi1, &lo, 1, HAL_MAX_DELAY);
+    }
+    TFT_CS_Set();
+}
+
+void TFT_DrawHLine(uint16_t x, uint16_t y, uint16_t w, uint16_t color)
+{
+    if (y >= _height) return;
+    if (x >= _width)  return;
+    if (x + w > _width) w = _width - x;
+    if (w == 0) return;
+    TFT_FillRect(x, y, w, 1, color);
+}
+
+void TFT_DrawVLine(uint16_t x, uint16_t y, uint16_t h, uint16_t color)
+{
+    if (x >= _width)  return;
+    if (y >= _height) return;
+    if (y + h > _height) h = _height - y;
+    if (h == 0) return;
+    TFT_FillRect(x, y, 1, h, color);
+}
+
 // ---- Başlatma Fonksiyonları ----
 /**
  * @brief TFT ekranı başlatır ve temel ayarlarını yapar.
